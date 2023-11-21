@@ -1,6 +1,7 @@
 import path from 'path';
+import webpack from 'webpack';
 
-const base = {
+const base: webpack.Configuration = {
   mode: 'development',
   module: {
     rules: [
