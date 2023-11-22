@@ -1,14 +1,21 @@
 import path from 'path';
-import webpack from 'webpack';
+import webpack, { Plugin } from 'webpack';
+
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 const base: webpack.Configuration = {
   mode: 'development',
+  plugins: [new MiniCssExtractPlugin() as any as Plugin], // @types/mini-css-extract-plugin is out of date
   module: {
     rules: [
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: [/node_modules/, /dist/],
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       }
     ]
   },

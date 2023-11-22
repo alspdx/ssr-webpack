@@ -8,6 +8,10 @@ import routes from '../app/routes';
 function Html({ content }: { content: React.ReactElement }) {
   return (
     <html>
+      <head>
+        <title>React SSR</title>
+        <link rel="stylesheet" href="main.css" />
+      </head>
       <body>
         <div id="root">{content}</div>
         <script src="client.js" /> 
