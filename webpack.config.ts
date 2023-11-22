@@ -3,8 +3,10 @@ import webpack, { Plugin } from 'webpack';
 
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
+const isDevelopment = true;
+
 const base: webpack.Configuration = {
-  mode: 'development',
+  mode: isDevelopment ? 'development' : 'production',
   plugins: [new MiniCssExtractPlugin() as any as Plugin], // @types/mini-css-extract-plugin is out of date
   module: {
     rules: [
@@ -14,8 +16,29 @@ const base: webpack.Configuration = {
         exclude: [/node_modules/, /dist/],
       },
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        test: /\.s?css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: true,
+                localIdentName: '[path][name]__[local]--[hash:base64]',
+              }
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  'autoprefixer',
+                ],
+              },
+            },
+          },
+        ],
       }
     ]
   },

@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "webpack --color",
     "start": "node dist/server.js",
-    "watch": "webpack --watch",
+    "watch": "webpack --color --watch",
     "dev": "nodemon dist/server.js"
   },
   "author": "",
@@ -25,9 +25,11 @@
     "@types/react-dom": "^16.9.23",
     "@types/react-router": "^3.0.28",
     "@types/webpack": "^4.41.37",
+    "autoprefixer": "^10.4.16",
     "css-loader": "^5.2.7",
     "mini-css-extract-plugin": "^1.6.2",
     "nodemon": "^3.0.1",
+    "postcss-loader": "^4.3.0",
     "ts-loader": "^8.4.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2",

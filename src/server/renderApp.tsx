@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/server';
 import { RouterContext, match } from 'react-router';
 import { Request, Response } from 'express';
 
-import routes from '../app/routes';  
+import routes from '../app/routes';
 
 function Html({ content }: { content: React.ReactElement }) {
   return (
@@ -14,7 +14,7 @@ function Html({ content }: { content: React.ReactElement }) {
       </head>
       <body>
         <div id="root">{content}</div>
-        <script src="client.js" /> 
+        <script src="client.js" />
       </body>
     </html>
   )
@@ -22,12 +22,12 @@ function Html({ content }: { content: React.ReactElement }) {
 
 export default function renderApp(req: Request, res: Response) {
   match(
-    { routes, location: req.originalUrl }, 
+    { routes, location: req.originalUrl },
     (error, redirectLocation, renderProps) => {
       if (redirectLocation) {
         res.redirect(redirectLocation.pathname + redirectLocation.search);
       } else if (error) {
-        // it isn't clear when a React Router match error would happen but 
+        // it isn't clear when a React Router match error would happen but
         // it should be handled anyway
         console.error('ROUTER ERROR:', error);
         res.status(500).send('Something bad happened');
