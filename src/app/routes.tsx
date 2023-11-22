@@ -1,10 +1,10 @@
 import React from 'react';
 import { IndexRoute, Route } from 'react-router';
 
-import Home from './Home';
-import { Page } from './Page';
-import Container from './Container';
-import WithModule from './WithModule';
+import Container from './Container/Container';
+import Home from './Home/Home';
+import Page from './Page/Page';
+import WithModule from './WithModule/WithModule';
 
 const routes = (
   <Route path="/" component={Container}>
