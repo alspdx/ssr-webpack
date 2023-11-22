@@ -7,6 +7,7 @@ export function Page() {
       style={{
         backgroundColor: 'black',
         color: 'white',
+        cursor: 'pointer',
       }}
     >
       <h1>Some other page...</h1>
