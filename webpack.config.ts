@@ -1,16 +1,23 @@
+import type { Configuration, Plugin } from 'webpack'
 import path from 'path';
-import webpack, { Plugin } from 'webpack';
 
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import nodeExternals from 'webpack-node-externals';
 
 const isDevelopment = true;
 
-const base: webpack.Configuration = {
+const base: Configuration = {
   mode: isDevelopment ? 'development' : 'production',
-  plugins: [new MiniCssExtractPlugin() as any as Plugin], // @types/mini-css-extract-plugin is out of date
+  devtool: isDevelopment ? 'eval-source-map' : 'source-map',
+  plugins: [
+    // new webpack.ProgressPlugin(),
+    new MiniCssExtractPlugin() as any as Plugin, // @types/mini-css-extract-plugin is out of date
+  ],
   module: {
     rules: [
       {
+        // load typescript files, ignoring node_modules and dist
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: [/node_modules/, /dist/],
@@ -18,13 +25,15 @@ const base: webpack.Configuration = {
       {
         test: /\.s?css$/,
         use: [
+          // it is supposedly faster to use style-loader during development,
+          // but I have not been able to get that working yet
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
               modules: {
-                auto: true,
-                localIdentName: '[path][name]__[local]--[hash:base64]',
+                auto: true, // identify .module.css files and interop with vanilla .css files
+                localIdentName: isDevelopment ? '[path][name]__[local]' : '[hash:base64]',
               }
             }
           },
@@ -48,24 +57,40 @@ const base: webpack.Configuration = {
   },
 };
 
-const client = {
+const client: Configuration = {
   ...base,
   target: 'web',
-  entry: './src/client/index.tsx',
+  entry: [
+    './src/client/index.tsx'
+  ],
+  plugins: [
+    ...base.plugins || [],
+    // clean webpack plugin targets output.path and should be used separately
+    // for both client and server configs
+    new CleanWebpackPlugin(),
+  ],
   output: {
-    filename: 'client.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist/client'),
+    publicPath: '/',
   },
 };
 
-const server = {
+export const serverConfig: Configuration = {
   ...base,
   target: 'node',
-  entry: './src/server/index.ts',
+  externals: [nodeExternals()], // node externals should not be bundled with server code
+  entry: [
+    './src/server/index.ts',
+  ],
+  plugins: [
+    ...base.plugins || [],
+    new CleanWebpackPlugin(),
+  ],
   output: {
-    filename: 'server.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist/server'),
   },
 };
 
-export default [client, server];
+export default [client, serverConfig];

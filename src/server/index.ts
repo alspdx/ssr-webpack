@@ -1,3 +1,5 @@
+require('ts-node').register();
+
 import express from 'express';
 import http from 'http';
 
@@ -7,7 +9,7 @@ const PORT = 3000;
 
 const app = express();
 
-app.use(express.static('dist'));
+app.use(express.static('dist/client'));
 
 app.use(renderApp);
 
