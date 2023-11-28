@@ -1,5 +1,5 @@
 .home {
-  background: lightcoral;
+  background: url('./cat.jpg') no-repeat center center fixed;
   cursor: not-allowed;
   color: lightyellow;
 }

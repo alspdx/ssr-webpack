@@ -10,11 +10,11 @@ function Html({ content }: { content: React.ReactElement }) {
     <html>
       <head>
         <title>React SSR</title>
-        <link rel="stylesheet" href="main.css" />
+        <link rel="stylesheet" href="/main.css" />
       </head>
       <body>
         <div id="root">{content}</div>
-        <script src="client.js" />
+        <script src="/client.js" />
       </body>
     </html>
   )

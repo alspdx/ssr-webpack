@@ -7,8 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --color",
     "start": "node dist/server/index.js",
-    "watch": "webpack --color --watch",
-    "dev": "nodemon dist/server/index.js"
+    "watch": "nodemon --watch \"./webpack.*.*\" --exec \"webpack --color --watch\"",
+    "dev": "nodemon dist/server/index.js",
+    "serve": "webpack serve --mode=development --color --open"
   },
   "author": "",
   "license": "ISC",
@@ -28,15 +29,16 @@
     "@types/webpack-node-externals": "^3.0.4",
     "autoprefixer": "^10.4.16",
     "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^5.2.7",
-    "mini-css-extract-plugin": "^1.6.2",
+    "css-loader": "^6.8.1",
+    "mini-css-extract-plugin": "^2.7.6",
     "nodemon": "^3.0.1",
-    "postcss-loader": "^4.3.0",
+    "postcss-loader": "^7.3.3",
+    "style-loader": "^3.3.3",
     "ts-loader": "^8.4.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2",
-    "webpack": "^4.47.0",
-    "webpack-cli": "^4.10.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
   }
 }

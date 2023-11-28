@@ -1,18 +1,16 @@
-import type { Configuration, Plugin } from 'webpack'
+import type { Configuration } from 'webpack'
 import path from 'path';
 
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 
-const isDevelopment = true;
-
-const base: Configuration = {
-  mode: isDevelopment ? 'development' : 'production',
-  devtool: isDevelopment ? 'eval-source-map' : 'source-map',
+const baseConfig: Configuration = {
+  mode: 'development',
+  devtool: 'eval-cheap-source-map',
+  stats: 'minimal',
   plugins: [
     // new webpack.ProgressPlugin(),
-    new MiniCssExtractPlugin() as any as Plugin, // @types/mini-css-extract-plugin is out of date
+    new MiniCssExtractPlugin(), // @types/mini-css-extract-plugin is out of date
   ],
   module: {
     rules: [
@@ -25,15 +23,14 @@ const base: Configuration = {
       {
         test: /\.s?css$/,
         use: [
-          // it is supposedly faster to use style-loader during development,
-          // but I have not been able to get that working yet
+          // style-loader shows FOUC with SSR, not sure what to do about that yet..
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
               modules: {
                 auto: true, // identify .module.css files and interop with vanilla .css files
-                localIdentName: isDevelopment ? '[path][name]__[local]' : '[hash:base64]',
+                localIdentName: '[path][name]__[local]',
               }
             }
           },
@@ -48,6 +45,11 @@ const base: Configuration = {
             },
           },
         ],
+      },
+      {
+        // Webpack 5 asset/resource replaces file-loader
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       }
     ]
   },
@@ -55,42 +57,31 @@ const base: Configuration = {
     modules: ['node_modules', path.resolve(__dirname, 'src')],
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.json'],
   },
-};
-
-const client: Configuration = {
-  ...base,
-  target: 'web',
-  entry: [
-    './src/client/index.tsx'
-  ],
-  plugins: [
-    ...base.plugins || [],
-    // clean webpack plugin targets output.path and should be used separately
-    // for both client and server configs
-    new CleanWebpackPlugin(),
-  ],
   output: {
     filename: 'index.js',
+    clean: true,
+  }
+};
+
+export const clientConfig: Configuration = {
+  ...baseConfig,
+  target: 'web',
+  entry: './src/client/index.tsx',
+  output: {
+    ...baseConfig.output,
     path: path.resolve(__dirname, 'dist/client'),
-    publicPath: '/',
   },
 };
 
 export const serverConfig: Configuration = {
-  ...base,
+  ...baseConfig,
   target: 'node',
   externals: [nodeExternals()], // node externals should not be bundled with server code
-  entry: [
-    './src/server/index.ts',
-  ],
-  plugins: [
-    ...base.plugins || [],
-    new CleanWebpackPlugin(),
-  ],
+  entry: './src/server/index.ts',
   output: {
-    filename: 'index.js',
+    ...baseConfig.output,
     path: path.resolve(__dirname, 'dist/server'),
   },
 };
 
-export default [client, serverConfig];
+export default [clientConfig, serverConfig];
