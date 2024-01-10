@@ -8,3 +8,10 @@ const render = (Component: React.ComponentType) => {
 };
 
 render(App);
+
+if (module.hot) {
+  module.hot.accept('./App', () => {
+    const NextApp = require('./App').default;
+    render(NextApp);
+  });
+}

@@ -1,20 +1,22 @@
-require('ts-node').register();
-
 import express from 'express';
-import http from 'http';
+import fs from 'fs';
+import path from 'path';
 
-import renderApp from './renderApp';
+import render from './render';
 
 const PORT = 3000;
 
 const app = express();
 
-app.use(express.static('dist/client'));
+app.use(express.static(path.resolve(__dirname, '../client')));
 
-app.use(renderApp);
+app.use('*', (req, res) => {
+  const manifest = fs.readFileSync(path.resolve(__dirname, '../webpack-manifest.json'), 'utf-8');
+  const assetUrls = Object.values(JSON.parse(manifest)) as string[];
 
-const server = http.createServer(app);
+  render(req, res, assetUrls);
+});
 
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log('Server is listening on port %s', PORT);
 });
