@@ -1,32 +1,31 @@
 import type { Configuration } from 'webpack';
-import path from 'path'
-import nodeExternals from 'webpack-node-externals';
 import NodemonPlugin from 'nodemon-webpack-plugin';
-
-import { merge } from 'webpack-merge';
-
+import path from 'path';
 import { getCommonConfig } from './webpack.common';
+import { merge } from 'webpack-merge';
 
 const serverConfig = merge<Configuration>(getCommonConfig(false), {
   name: 'server',
   target: 'node',
-  stats: {
-    all: true,
-  },
-  // server should only be bundled into a single chunk
-  entry: './server/index.ts',
+  mode: 'none',
+  entry: './server/server.js',
   output: {
+    filename: 'server.js',
     path: path.resolve(__dirname, '../dist/server'),
-    // output filename should be consistent, no hashing, so we can call it from
-    // the start script
-    filename: 'index.js',
-    clean: true,
   },
-  externals: [nodeExternals()],
   plugins: [
     new NodemonPlugin({
-      nodeArgs: ['--experimental-fetch'],
-    }),
+      nodeArgs: ['--openssl-legacy-provider'],
+    })
+  ],
+  ignoreWarnings: [
+    {
+      // this is to ignore a specific warning from Express' legacy renderer
+      // initializing with a dynamic require, it's not relevant to our use case
+      // so we can safely ignore it
+      module: /node_modules\/express\/lib\/view\.js/,
+      message: /the request of a dependency is an expression/i,
+    },
   ],
 });
 

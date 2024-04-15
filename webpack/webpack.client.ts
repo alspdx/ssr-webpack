@@ -1,53 +1,72 @@
+/// <reference types="webpack-dev-server" />
+
 import type { Configuration } from 'webpack';
 import path from 'path';
-import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
-import 'webpack-dev-server';
-
 import { merge } from 'webpack-merge';
+import CopyPlugin from 'copy-webpack-plugin';
 
-import { getCommonConfig, isProduction } from './webpack.common';
-
-const outputPath = path.resolve(__dirname, '../dist/client');
+import { clientPort, getCommonConfig } from './webpack.common';
 
 const clientConfig = merge<Configuration>(getCommonConfig(true), {
   name: 'client',
   target: 'web',
-  entry: {
-    vendor: ['react', 'react-dom'],
-    main: {
-      dependOn: 'vendor',
-      import: './client/index.tsx',
+  devtool: 'eval-cheap-source-map',
+  resolve: {
+    fallback: {
+      // config.resolve allows configuring custom import resolution for modules
+      // TODO: do not import Apptimize server SDK in client code and remove this
+      fs: false,
     },
   },
+  entry: {
+    main: './client.js',
+  },
   output: {
-    path: outputPath,
-    filename: isProduction ? '[name].[contenthash].js' : '[name].js',
-    clean: true,
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, '../dist/client'),
   },
   devServer: {
     devMiddleware: {
       serverSideRender: true,
     },
-    client: {
-      // set logging to 'verbose' or 'info' for debugging hot reloading or
-      // other dev server issues
-      logging: 'warn',
-    },
+    https: false,
+    static: path.resolve(__dirname, '../dist/client'),
+    hot: false, // optional via `npm run hot`
     liveReload: false,
-    static: outputPath,
-    hot: true,
-    port: 3001,
+    port: clientPort,
     historyApiFallback: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
   },
   plugins: [
-    new ReactRefreshWebpackPlugin(),
     new WebpackManifestPlugin({
       writeToFileEmit: true,
-      fileName: path.resolve(__dirname, '../dist/webpack-manifest.json')
+      fileName: path.resolve(__dirname, '../dist/client/assets.json'),
     }),
-  ],
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, '../static'),
+          to: path.resolve(__dirname, '../dist/client'),
+        },
+      ],
+    }),
+  ].filter(Boolean),
+  optimization: {
+    usedExports: true,
+    minimize: true,
+    runtimeChunk: 'single',
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /node_modules/,
+          name: 'vendor',
+          chunks: 'all',
+        },
+      },
+    },
+  },
 });
 
 export default clientConfig;

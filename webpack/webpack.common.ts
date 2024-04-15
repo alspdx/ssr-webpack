@@ -1,43 +1,42 @@
-import type { Configuration } from 'webpack';
+import { Configuration, DefinePlugin, EnvironmentPlugin } from 'webpack';
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 
-export const isProduction = process.env.NODE_ENV === 'production';
-
-const srcPath = path.resolve(__dirname, '../src');
-const publicPath = isProduction ? '/' : 'http://localhost:3001/';
+const serverPort = 3000;
+export const clientPort = serverPort + 1;
 
 export function getCommonConfig(isClient: boolean): Configuration {
+  const srcPath = path.resolve(__dirname, '../src');
+  const domain = 'localhost';
+
+  const publicPath = `http://${domain}:${clientPort}/`;
+
   return {
-    mode: isProduction ? 'production' : 'development',
-    resolve: {
-      extensions: ['.tsx', '.ts', '.js', '.jsx', '.json'],
-      modules: ['node_modules', srcPath],
-    },
+    mode: 'development',
     context: srcPath,
+    resolve: {
+      modules: ['node_modules', srcPath],
+      extensions: ['.json', '.js', '.jsx', '.ts', '.tsx'],
+    },
     output: {
+      clean: true,
       publicPath,
     },
-    plugins: [
-      new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[contenthash].css' : '[name].css',
-        ignoreOrder: true,
-      }),
-    ],
+    performance: {
+      hints: false,
+    },
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
+          test: /\.[jt]sx?$/,
+          include: path.resolve(__dirname, '../src'),
           use: {
             loader: 'babel-loader',
             options: {
-              presets: [
-                '@babel/preset-env',
-                '@babel/preset-react',
-                '@babel/preset-typescript'
-              ],
-              plugins: [isClient && !isProduction && 'react-refresh/babel'].filter(Boolean),
+              plugins: [
+                isClient && 'react-refresh/babel',
+              ].filter(Boolean),
             },
           }
         },
@@ -53,32 +52,51 @@ export function getCommonConfig(isClient: boolean): Configuration {
             {
               loader: 'css-loader',
               options: {
+                import: true,
+                sourceMap: true,
                 modules: {
                   auto: true,
-                  localIdentName: '[path][name]__[local]',
-                }
-              }
+                  localIdentName: '[path][name]__[local]'
+                },
+              },
             },
+            'postcss-loader',
+            'resolve-url-loader',
             {
-              loader: 'postcss-loader',
+              loader: 'sass-loader',
               options: {
-                postcssOptions: {
-                  plugins: [
-                    'autoprefixer',
-                  ],
+                sourceMap: true,
+                sassOptions: {
+                  outputStyle: 'expanded',
+                  includePaths: [path.resolve(__dirname, '../src/styles')],
                 },
               },
             },
           ],
         },
         {
-          test: /\.(png|svg|jpe?g|gif)$/i,
+          test: /\.(jpe?g|png|svg)$/i,
           type: 'asset/resource',
           generator: {
-            emit: isClient, // no emit for ssr
+            filename: '[name].[contenthash][ext]',
+            emit: isClient
           },
-        },
-      ],
-    }
+        }
+      ]
+    },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: '[name].[contenthash].css',
+        ignoreOrder: true,
+      }),
+      new EnvironmentPlugin({ // pass env vars to bundle, setting default values in options object
+        ENVIRONMENT: 'development',
+      }),
+
+      new DefinePlugin({
+        __PUBLIC_PATH_PREFIX__: JSON.stringify(publicPath),
+      }),
+      isClient && new ReactRefreshWebpackPlugin(),
+    ].filter(Boolean),
   };
 }
