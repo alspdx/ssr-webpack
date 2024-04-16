@@ -10,11 +10,32 @@ const app = express();
 
 app.use(express.static(path.resolve(__dirname, '../client')));
 
-app.use('*', (req, res) => {
-  const manifest = fs.readFileSync(path.resolve(__dirname, '../webpack-manifest.json'), 'utf-8');
-  const assetUrls = Object.values(JSON.parse(manifest)) as string[];
+function getStaticAssetPaths() {
+  const data = fs.readFileSync(
+    path.resolve(__dirname, '../client/assets.json'),
+    'utf-8'
+  );
+  const assets = (JSON.parse(data) || {}) as Record<string, string>;
 
-  render(req, res, assetUrls);
+  const assetPaths = Object.values(assets).reduce(
+    (assets, path) => {
+      if (path.endsWith('.css')) {
+        assets.styles.push(path);
+      } else if (path.endsWith('.js')) {
+        assets.scripts.push(path);
+      }
+      return assets;
+    },
+    { styles: [], scripts: [] } as { styles: string[]; scripts: string[] }
+  );
+
+  return assetPaths;
+}
+
+app.use('*', (req, res) => {
+  const assetPaths = getStaticAssetPaths();
+
+  render(req, res, assetPaths);
 });
 
 app.listen(PORT, () => {
