@@ -1,4 +1,4 @@
-import { Configuration, DefinePlugin, EnvironmentPlugin } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
@@ -89,10 +89,6 @@ export function getCommonConfig(isClient: boolean): Configuration {
         filename: '[name].[contenthash].css',
         ignoreOrder: true,
       }),
-      new EnvironmentPlugin({ // pass env vars to bundle, setting default values in options object
-        ENVIRONMENT: 'development',
-      }),
-
       new DefinePlugin({
         __PUBLIC_PATH_PREFIX__: JSON.stringify(publicPath),
       }),

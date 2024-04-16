@@ -20,7 +20,7 @@ const clientConfig = merge<Configuration>(getCommonConfig(true), {
     },
   },
   entry: {
-    main: './client.js',
+    main: 'client/index.tsx',
   },
   output: {
     filename: '[name].[contenthash].js',

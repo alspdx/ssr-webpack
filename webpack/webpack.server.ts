@@ -8,7 +8,7 @@ const serverConfig = merge<Configuration>(getCommonConfig(false), {
   name: 'server',
   target: 'node',
   mode: 'none',
-  entry: './server/server.js',
+  entry: 'server/index.ts',
   output: {
     filename: 'server.js',
     path: path.resolve(__dirname, '../dist/server'),
