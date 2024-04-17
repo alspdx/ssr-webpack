@@ -18,3 +18,9 @@ interface Hot {
 interface NodeModule {
   hot?: Hot;
 }
+
+interface Window {
+  __PRELOADED_STATE__: any;
+}
+declare const __RUNTIME_ENVIRONMENT__: 'server' | 'client';
+declare const __PUBLIC_PATH_PREFIX__: string;

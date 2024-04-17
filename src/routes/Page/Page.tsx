@@ -4,7 +4,7 @@ import catPath from '../Home/cat.jpg';
 
 import './Page.css';
 
-export default function Page() {
+export function Page() {
   return (
     <div
       onClick={() => console.log('Hello, you clicked?')}

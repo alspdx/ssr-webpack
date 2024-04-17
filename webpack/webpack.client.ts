@@ -1,6 +1,6 @@
 /// <reference types="webpack-dev-server" />
 
-import type { Configuration } from 'webpack';
+import { DefinePlugin, type Configuration } from 'webpack';
 import path from 'path';
 import { WebpackManifestPlugin } from 'webpack-manifest-plugin';
 import { merge } from 'webpack-merge';
@@ -50,6 +50,9 @@ const clientConfig = merge<Configuration>(getCommonConfig(true), {
           to: path.resolve(__dirname, '../dist/client'),
         },
       ],
+    }),
+    new DefinePlugin({
+      __RUNTIME_ENVIRONMENT__: JSON.stringify('client'),
     }),
   ].filter(Boolean),
   optimization: {

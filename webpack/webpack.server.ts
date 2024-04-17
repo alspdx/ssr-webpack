@@ -1,4 +1,4 @@
-import type { Configuration } from 'webpack';
+import { DefinePlugin, type Configuration } from 'webpack';
 import NodemonPlugin from 'nodemon-webpack-plugin';
 import path from 'path';
 import { getCommonConfig } from './webpack.common';
@@ -16,7 +16,10 @@ const serverConfig = merge<Configuration>(getCommonConfig(false), {
   plugins: [
     new NodemonPlugin({
       nodeArgs: ['--openssl-legacy-provider'],
-    })
+    }),
+    new DefinePlugin({
+      __RUNTIME_ENVIRONMENT__: JSON.stringify('server'),
+    }),
   ],
   ignoreWarnings: [
     {

@@ -1,11 +1,28 @@
 import React from 'react';
-import { browserHistory, Router } from 'react-router';
+import { browserHistory, Router, RouterState } from 'react-router';
 
-import routes from 'app/routes';
+import { routes } from 'routes';
+import { LoaderContextProvider } from 'context/LoaderContext';
+
+interface RouterProps {
+  // router: this.router,
+  location: RouterState['location'];
+  params: RouterState['params'];
+  components: RouterState['components'];
+  routes: RouterState['routes'];
+}
 
 export default function App() {
   return (
-    <Router history={browserHistory}>
+    <Router
+      history={browserHistory}
+      render={(routerProps: RouterProps) =>
+        <LoaderContextProvider
+          routerProps={routerProps}
+          preloadedState={window.__PRELOADED_STATE__}
+        />
+      }
+    >
       {routes}
     </Router>
   );
