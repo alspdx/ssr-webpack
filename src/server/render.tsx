@@ -7,7 +7,6 @@ import { routes } from 'routes';
 import { LoaderContextProvider, loadRouteData, getRouteLoaders } from 'context/LoaderContext';
 
 export default function render(req: Request, res: Response, assetPaths: { styles: string[]; scripts: string[] }) {
-  console.log('attempting to render', routes);
   match(
     { routes, location: req.originalUrl },
     async (error, redirectLocation, renderProps) => {

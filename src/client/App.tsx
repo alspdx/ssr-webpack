@@ -2,7 +2,9 @@ import React from 'react';
 import { browserHistory, Router, RouterState } from 'react-router';
 
 import { routes } from 'routes';
-import { LoaderContextProvider } from 'context/LoaderContext';
+import { LoaderContextProvider } from 'context/LoaderContext/LoaderContext';
+
+import './reset.css';
 
 interface RouterProps {
   // router: this.router,

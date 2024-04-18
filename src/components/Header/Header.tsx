@@ -7,9 +7,8 @@ export function Header() {
       <ul>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/page">Page</Link></li>
-        <li><Link to="/with-module">With CSS Module</Link></li>
-        <li><Link to="/nesting">Nesting</Link></li>
-        <li><Link to="/nesting/child">Nesting Child</Link></li>
+        <li><Link to="/loader">With Loader</Link></li>
+        <li><Link to="/loader/child">With Nested Loader</Link></li>
       </ul>
     </header>
   );
