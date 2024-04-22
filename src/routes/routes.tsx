@@ -1,5 +1,5 @@
 import React from 'react';
-import { IndexRoute, Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 
 import { Container } from './Container'
 import { Home } from './Home'
@@ -8,11 +8,11 @@ import { WithLoader } from './WithLoader'
 import { WithLoaderChild } from './WithLoaderChild'
 
 export const routes = (
-  <Route path="/" component={Container}>
-    <IndexRoute component={Home} />
-    <Route path="page" component={Page} />
-    <Route path="loader" component={WithLoader}>
-      <Route path="child" component={WithLoaderChild} />
+  <Route path="/" element={<Container />}>
+    <Route index element={<Home />} />
+    <Route path="page" element={<Page />} />
+    <Route path="loader" element={<WithLoader />} loader={WithLoader.dataLoader}>
+      <Route path="child" element={<WithLoaderChild />} loader={WithLoaderChild.dataLoader} />
     </Route>
   </Route>
 );

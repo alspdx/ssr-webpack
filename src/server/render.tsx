@@ -1,39 +1,71 @@
 import React from 'react';
 import ReactDOM from 'react-dom/server';
-import { match } from 'react-router';
-import { Request, Response } from 'express';
+import { createRoutesFromElements } from 'react-router-dom';
+import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
+
+import { Request as ExpressReq, Response as ExpressRes } from 'express';
 
 import { routes } from 'routes';
-import { LoaderContextProvider, loadRouteData, getRouteLoaders } from 'context/LoaderContext';
 import { renderStaticHtml } from './renderStaticHtml';
 
-export default function render(req: Request, res: Response, assets: { styles: string[]; scripts: string[] }) {
-  match(
-    { routes, location: req.originalUrl },
-    async (error, redirectLocation, renderProps) => {
-      if (redirectLocation) {
-        console.log('Redirecting to:', redirectLocation.pathname + redirectLocation.search);
-        res.redirect(redirectLocation.pathname + redirectLocation.search);
-      } else if (error) {
-        console.error('ROUTER ERROR:', error);
-        res.status(500).send('Something bad happened');
-      } else if (renderProps) {
-        const loaders = getRouteLoaders(renderProps.components);
-        const preloadedData = await loadRouteData(loaders);
+const staticHandler = createStaticHandler(
+  createRoutesFromElements(routes)
+);
 
-        const content = ReactDOM.renderToString(
-          <LoaderContextProvider
-            routerProps={renderProps}
-            preloadedState={preloadedData}
-          />
-        )
+/**
+ * adapter to use react-router-dom's static handler with express
+ *
+ * Borrowed from React Router documentation and modified slightly, but
+ * importable from Remix's Express adapter.
+ */
+function createFetchRequestFromExpressRequest(req: ExpressReq, res: ExpressRes) {
+  const origin = `${req.protocol}://${req.get("host")}`;
+  const url = new URL(req.originalUrl || req.url, origin);
 
-        const html = renderStaticHtml({ assets, content, preloadedData });
+  const controller = new AbortController();
+  res.on("close", () => controller.abort());
 
-        res.status(200).send(html);
+  const headers = new Headers();
+
+  for (const [key, values] of Object.entries(req.headers)) {
+    if (values) {
+      if (Array.isArray(values)) {
+        for (let value of values) {
+          headers.append(key, value);
+        }
       } else {
-        res.status(404).send('Not found');
+        headers.set(key, values);
       }
     }
-  );
+  }
+
+  const init: RequestInit = {
+    method: req.method,
+    headers,
+    signal: controller.signal,
+  };
+
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    init.body = req.body;
+  }
+
+  return new globalThis.Request(url.href, init);
+};
+
+export default async function render(req: ExpressReq, res: ExpressRes, assets: { styles: string[]; scripts: string[] }) {
+  const request = createFetchRequestFromExpressRequest(req, res);
+
+  const context = await staticHandler.query(request);
+
+  if (context instanceof globalThis.Response) {
+    throw context;
+  }
+
+  const staticRouter = createStaticRouter(staticHandler.dataRoutes, context);
+
+  const content = ReactDOM.renderToString(
+    <StaticRouterProvider router={staticRouter} context={context} />
+  )
+
+  res.send(renderStaticHtml({ assets, content }));
 }

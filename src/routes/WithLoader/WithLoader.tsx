@@ -1,10 +1,11 @@
 import React from 'react';
+import { useLoaderData, Outlet } from 'react-router-dom';
 
-import { useLoaderState } from 'context/LoaderContext/LoaderContext';
 import { search } from 'services/search';
 
 import styles from './WithLoader.module.css';
 import { SearchResponse } from 'types';
+import { sleep } from 'utils';
 
 interface LoaderResult {
   message: string;
@@ -16,16 +17,18 @@ interface Props {
 }
 
 export function WithLoader(props: Props) {
-  const data = useLoaderState<LoaderResult>(WithLoader.name);
+  const data = useLoaderData() as LoaderResult | undefined;
 
   return (
     <div className={styles.withLoader}>
       <span>{data?.message}</span>
-      {props.children || 'no children provided'}
+      <Outlet />
     </div>
   )
 }
 WithLoader.dataLoader = async (): Promise<LoaderResult> => {
+  await sleep();
+
   return {
     message: `WithLoader loaded on ${__RUNTIME_ENVIRONMENT__}`,
     data: await search('warriors'),

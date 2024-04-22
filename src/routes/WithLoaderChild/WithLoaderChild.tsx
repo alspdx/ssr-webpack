@@ -1,10 +1,11 @@
 import React from 'react';
+import { useLoaderData } from 'react-router-dom';
 
-import { useLoaderState } from 'context/LoaderContext/LoaderContext';
 import { search } from 'services/search';
 
 import styles from './WithLoaderChild.module.css';
 import { SearchResponse } from 'types';
+import { sleep } from 'utils';
 
 interface LoaderResult {
   message: string;
@@ -12,7 +13,7 @@ interface LoaderResult {
 }
 
 export function WithLoaderChild() {
-  const data = useLoaderState<LoaderResult>(WithLoaderChild.name);
+  const data = useLoaderData() as LoaderResult | undefined;
 
   return (
     <div className={styles.withLoaderChild}>
@@ -21,6 +22,8 @@ export function WithLoaderChild() {
   )
 }
 WithLoaderChild.dataLoader = async (): Promise<LoaderResult> => {
+  await sleep();
+
   return {
     message: `WithLoaderChild loaded on ${__RUNTIME_ENVIRONMENT__}`,
     data: await search('seahawks'),

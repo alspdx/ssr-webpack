@@ -10,10 +10,10 @@ interface RenderParams {
   /**
    * preloaded data for each of the component loaders
    */
-  preloadedData: Record<string, unknown>;
+  preloadedData?: Record<string, unknown>;
 }
 
-export function renderStaticHtml({ assets, preloadedData, content }: RenderParams) {
+export function renderStaticHtml({ assets, preloadedData = {}, content }: RenderParams) {
   const STYLES = assets.styles
     .map((path) => `<link rel="stylesheet" href="${path}">`)
     .join('\n');
