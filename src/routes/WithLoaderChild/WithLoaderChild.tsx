@@ -5,6 +5,7 @@ import { search } from 'services/search';
 
 import styles from './WithLoaderChild.module.css';
 import { SearchResponse } from 'types';
+import { sleep } from 'utils';
 
 interface LoaderResult {
   message: string;
@@ -21,6 +22,8 @@ export function WithLoaderChild() {
   )
 }
 WithLoaderChild.dataLoader = async (): Promise<LoaderResult> => {
+  await sleep();
+
   return {
     message: `WithLoaderChild loaded on ${__RUNTIME_ENVIRONMENT__}`,
     data: await search('seahawks'),

@@ -5,6 +5,7 @@ import { search } from 'services/search';
 
 import styles from './WithLoader.module.css';
 import { SearchResponse } from 'types';
+import { sleep } from 'utils';
 
 interface LoaderResult {
   message: string;
@@ -26,6 +27,8 @@ export function WithLoader(props: Props) {
   )
 }
 WithLoader.dataLoader = async (): Promise<LoaderResult> => {
+  await sleep();
+
   return {
     message: `WithLoader loaded on ${__RUNTIME_ENVIRONMENT__}`,
     data: await search('warriors'),
