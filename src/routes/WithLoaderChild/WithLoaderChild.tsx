@@ -21,7 +21,7 @@ export function WithLoaderChild() {
     </div>
   )
 }
-WithLoaderChild.dataLoader = async (): Promise<LoaderResult> => {
+WithLoaderChild.loader = async (): Promise<LoaderResult> => {
   await sleep();
 
   return {

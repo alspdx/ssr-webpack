@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom/server';
-import { createRoutesFromElements } from 'react-router-dom';
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
 
 import { Request as ExpressReq, Response as ExpressRes } from 'express';
@@ -8,9 +7,7 @@ import { Request as ExpressReq, Response as ExpressRes } from 'express';
 import { routes } from 'routes';
 import { renderStaticHtml } from './renderStaticHtml';
 
-const staticHandler = createStaticHandler(
-  createRoutesFromElements(routes)
-);
+const staticHandler = createStaticHandler(routes);
 
 /**
  * adapter to use react-router-dom's static handler with express

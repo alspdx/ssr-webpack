@@ -26,7 +26,7 @@ export function WithLoader(props: Props) {
     </div>
   )
 }
-WithLoader.dataLoader = async (): Promise<LoaderResult> => {
+WithLoader.loader = async (): Promise<LoaderResult> => {
   await sleep();
 
   return {
