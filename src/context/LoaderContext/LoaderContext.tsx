@@ -22,17 +22,17 @@ interface LoaderContextProviderProps {
 export function LoaderContextProvider({ routerProps, preloadedState = {} }: LoaderContextProviderProps) {
   const [currentRouterProps, setCurrentRouterProps] = useState(routerProps);
   const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState(preloadedState);
+  const [state, setState] = useState(preloadedState); // key by component name, value is data from loader
 
   const isInitialLoadRef = useRef(true);
 
   useEffect(() => {
-    const loaders = getRouteLoaders(routerProps.components);
-
     if (isInitialLoadRef.current) {
       isInitialLoadRef.current = false;
       return;
     }
+
+    const loaders = getRouteLoaders(routerProps.components);
 
     if (loaders.length > 0) {
       setIsLoading(true);
@@ -44,7 +44,6 @@ export function LoaderContextProvider({ routerProps, preloadedState = {} }: Load
     } else {
       setCurrentRouterProps(routerProps);
     }
-
   }, [routerProps])
 
   return (

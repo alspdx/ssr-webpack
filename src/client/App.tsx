@@ -1,8 +1,8 @@
 import React from 'react';
 import { browserHistory, Router, RouterState } from 'react-router';
 
+import { LoaderContextProvider } from 'context';
 import { routes } from 'routes';
-import { LoaderContextProvider } from 'context/LoaderContext/LoaderContext';
 
 import './reset.css';
 

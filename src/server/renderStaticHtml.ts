@@ -1,3 +1,5 @@
+export type AssetPaths = Record<'styles' | 'scripts', string[]>;
+
 interface RenderParams {
   /**
    * optional pre-rendered content to be injected into the HTML
@@ -6,7 +8,7 @@ interface RenderParams {
   /**
    * asset paths used to generate <link> and <script> tags
    */
-  assets: Record<'styles' | 'scripts', string[]>;
+  assets: AssetPaths;
   /**
    * preloaded data for each of the component loaders
    */

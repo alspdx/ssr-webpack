@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { useLoaderState } from 'context/LoaderContext/LoaderContext';
-import { search } from 'services/search';
-
-import styles from './WithLoader.module.css';
+import { useLoaderState } from 'context';
+import { search } from 'services';
 import { SearchResponse } from 'types';
 import { sleep } from 'utils';
+
+import styles from './WithLoader.module.css';
 
 interface LoaderResult {
   message: string;

@@ -8,7 +8,6 @@ interface Loader<T = unknown> {
 export function getRouteLoaders(components: RouteComponentWithLoader[]) {
   return components.reduce<Loader[]>((loaders, component) => {
     if (component.dataLoader) {
-
       loaders.push({
         name: component.name,
         dataLoader: component.dataLoader,

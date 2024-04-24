@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 
+import type { AssetPaths } from './renderStaticHtml';
 import render from './render';
 
 const PORT = 3000;
@@ -26,7 +27,7 @@ function getStaticAssetPaths() {
       }
       return assets;
     },
-    { styles: [], scripts: [] } as { styles: string[]; scripts: string[] }
+    { styles: [], scripts: [] } as AssetPaths
   );
 
   return assetPaths;

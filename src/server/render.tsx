@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom/server';
 import { match } from 'react-router';
 import { Request, Response } from 'express';
 
+import { LoaderContextProvider, loadRouteData, getRouteLoaders } from 'context';
 import { routes } from 'routes';
-import { LoaderContextProvider, loadRouteData, getRouteLoaders } from 'context/LoaderContext';
-import { renderStaticHtml } from './renderStaticHtml';
 
-export default function render(req: Request, res: Response, assets: { styles: string[]; scripts: string[] }) {
+import { AssetPaths, renderStaticHtml } from './renderStaticHtml';
+
+export default function render(req: Request, res: Response, assets: AssetPaths) {
   match(
     { routes, location: req.originalUrl },
     async (error, redirectLocation, renderProps) => {
@@ -26,7 +27,7 @@ export default function render(req: Request, res: Response, assets: { styles: st
             routerProps={renderProps}
             preloadedState={preloadedData}
           />
-        )
+        );
 
         const html = renderStaticHtml({ assets, content, preloadedData });
 
