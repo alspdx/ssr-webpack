@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLoaderData } from 'react-router-dom';
 
-import { search } from 'services/search';
-
-import styles from './WithLoaderChild.module.css';
+import { search } from 'services';
 import { SearchResponse } from 'types';
 import { sleep } from 'utils';
+
+import styles from './WithLoaderChild.module.css';
 
 interface LoaderResult {
   message: string;

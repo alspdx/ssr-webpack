@@ -1,3 +1,5 @@
+export type AssetPaths = Record<'styles' | 'scripts', string[]>;
+
 interface RenderParams {
   /**
    * optional pre-rendered content to be injected into the HTML
