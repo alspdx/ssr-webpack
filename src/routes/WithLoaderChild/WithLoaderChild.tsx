@@ -1,6 +1,6 @@
 import React from 'react';
+import { useLoaderData } from 'react-router-dom';
 
-import { useLoaderState } from 'context';
 import { search } from 'services';
 import { SearchResponse } from 'types';
 import { sleep } from 'utils';
@@ -13,7 +13,7 @@ interface LoaderResult {
 }
 
 export function WithLoaderChild() {
-  const data = useLoaderState<LoaderResult>(WithLoaderChild.name);
+  const data = useLoaderData() as LoaderResult | undefined;
 
   return (
     <div className={styles.withLoaderChild}>
@@ -21,7 +21,7 @@ export function WithLoaderChild() {
     </div>
   )
 }
-WithLoaderChild.dataLoader = async (): Promise<LoaderResult> => {
+WithLoaderChild.loader = async (): Promise<LoaderResult> => {
   await sleep();
 
   return {

@@ -8,14 +8,10 @@ interface RenderParams {
   /**
    * asset paths used to generate <link> and <script> tags
    */
-  assets: AssetPaths;
-  /**
-   * preloaded data for each of the component loaders
-   */
-  preloadedData: Record<string, unknown>;
+  assets: Record<'styles' | 'scripts', string[]>;
 }
 
-export function renderStaticHtml({ assets, preloadedData, content }: RenderParams) {
+export function renderStaticHtml({ assets, content }: RenderParams) {
   const STYLES = assets.styles
     .map((path) => `<link rel="stylesheet" href="${path}">`)
     .join('\n');
@@ -49,9 +45,6 @@ export function renderStaticHtml({ assets, preloadedData, content }: RenderParam
   </head>
   <body>
     <div id="root">${content}</div>
-    <script>
-      window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedData)};
-    </script>
     ${SCRIPTS}
   </body>
 </html>`;
